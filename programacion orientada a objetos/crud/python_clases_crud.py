@@ -55,8 +55,7 @@ def create_persona():
         month=mes_nacimiento,
         day=dia_nacimiento
     )
-    cod_area: int = int(
-        input("Ingresa el codigo de area del telefono de la persona: "))
+    cod_area: int = int(input("Ingresa el codigo de area del telefono de la persona: "))
     telefono: int = int(input("Ingresa el numero de telefono de la persona: "))
     persona = Persona(
         rut=rut,
@@ -79,28 +78,86 @@ def read_persona():
 
 
 def update_persona():
-    rut = input("")
+    rut_busqueda = input("Ingresa el rut de la persona a editar (Ej: 12345678-k): ")
     for persona in personas:
-        if persona.rut == rut:
-            print(
-                f"""
-                ==========================
-                ||  Edición de personas ||
-                ==========================
-                1. Rut: {persona.rut}
-                2. Nombres: {persona.nombres}
-                3. Apellidos: {persona.apellidos}
-                4. Fecha de nacimiento: {persona.fecha_nacimiento}
-                5. Codigo de area: {persona.cod_area}
-                6. Telefono: {persona.telefono}
-                0. No seguir modificando. 
-                """
-            )
-            opcion = input("¿Qué dato quieres modificar?")
+        if persona.rut == rut_busqueda:
+            while True:
+                print(
+                    f"""
+                    ==========================
+                    ||  Edición de personas ||
+                    ==========================
+                    1. Rut: {persona.rut}
+                    2. Nombres: {persona.nombres}
+                    3. Apellidos: {persona.apellidos}
+                    4. Fecha de nacimiento: {persona.fecha_nacimiento}
+                    5. Codigo de area: {persona.cod_area}
+                    6. Telefono: {persona.telefono}
+                    0. No seguir modificando. 
+                    """
+                )
+
+                opcion = input("¿Qué dato quieres modificar?")
+                
+                if opcion == "1":
+                    rut: str = input("Ingresa el rut de la persona: ")
+                    if persona_existe(persona):
+                        print(f"La persona con el rut {persona.rut} ya existe. Intente con otro rut.")
+                    persona.rut = rut
+                    print("Rut modificado exitosamente 👽✅")
+
+                elif opcion == "2":
+                    nombres: str = input("Ingresa los nombres de la persona: ")
+                    persona.nombres = nombres
+                    print("Nombres modificado exitosamente 👽✅")
+
+                elif opcion == "3":
+                    apellidos: str = input("Ingresa los apellidos de la persona: ")
+                    persona.apellidos = apellidos
+                    print("Nombres modificado exitosamente 👽✅")
+
+                elif opcion == "4":
+                    dia_nacimiento = int(input("Ingresa el dia de nacimiento de la persona: "))
+                    mes_nacimiento = int(input("Ingresa el mes de nacimiento de la persona: "))
+                    anio_nacimiento = int(input("Ingresa el año de nacimiento de la persona: "))
+                    fecha_nacimiento: date = date(
+                        year=anio_nacimiento,
+                        month=mes_nacimiento,
+                        day=dia_nacimiento
+                    )
+                    persona.fecha_nacimiento = fecha_nacimiento
+                    print("Fecha de nacimiento modificado exitosamente 👽✅")
+
+                elif opcion == "5":
+                    cod_area: int = int(input("Ingresa el codigo de area del telefono de la persona: "))
+                    persona.cod_area = cod_area
+                    print("Codigo de area modificado exitosamente 👽✅")
+
+                elif opcion == "6":
+                    telefono: int = int(input("Ingresa el numero de telefono de la persona: "))
+                    persona.telefono = telefono
+                    print("Telefono modificado exitosamente 👽✅")
+
+                elif opcion == "0":
+                    print("Modificaciones completadas.")
+                    break
+                else:
+                    print("Opcion incorrecta")
+                    input("Presiona ENTER para continuar...")
+    print(f"Persona con rut {rut_busqueda}, no encontrada.")
+    input("Presiona ENTER para continuar...")
 
 
 def delete_persona():
-    pass
+    rut_busqueda = input("Ingresa el rut de la persona a editar (Ej: 12345678-k): ")
+    for persona in personas:
+        if persona.rut == rut_busqueda:
+            print(f"Eliminando persona: {persona}")
+            personas.remove(persona)
+            print(f"Persona con rut {rut_busqueda} eliminada exitosamente")
+    
+    print(f"Persona con rut {rut_busqueda}, no encontrada.")
+    input("Presiona ENTER para continuar...")
 
 
 while True:
@@ -111,14 +168,20 @@ while True:
         ==========================
         1. Crear persona
         2. Listar personas
+        3. Actualizar persona
+        4. Eliminar persona
         0. Salir
         """
     )
-    opcion = input("Ingrese una opción [1-2, 0]: ")
+    opcion = input("Ingrese una opción [1-3, 0]: ")
     if opcion == "1":
         create_persona()
     elif opcion == "2":
         read_persona()
+    elif opcion == "3":
+        update_persona()
+    elif opcion == "4":
+        delete_persona()
     elif opcion == "0":
         print("¡Adios!")
         break
