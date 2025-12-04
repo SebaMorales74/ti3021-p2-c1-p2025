@@ -57,11 +57,4 @@ respuesta = requests.get(url="https://universalis.app/api/v2/data-centers")
 codigo_respuesta = respuesta.status_code
 data = respuesta.json()
 
-print(f"Codigo de respuesta: {codigo_respuesta}")
-# name, region, worlds
-for obj in data:
-    if obj["region"] == "Japan":
-        print(f"Nombre del servidor: {obj["name"]}")
-        print(f"Region del servidor: {obj["region"]}")
-        print(f"Cantidad de mundos: {len(obj["worlds"])}")
-        print()
+print(data)
