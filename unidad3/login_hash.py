@@ -3,7 +3,6 @@
 import os
 import bcrypt
 import oracledb
-from dotenv import load_dotenv
 # Cargamos las variables de entorno desde .env
 from dotenv import load_dotenv
 
@@ -12,8 +11,6 @@ load_dotenv()
 username = os.getenv("ORACLE_USER")
 dsn = os.getenv("ORACLE_DSN")
 password = os.getenv("ORACLE_PASSWORD")
-
-print(username,dsn,password)
 
 def get_connection():
     return oracledb.connect(
