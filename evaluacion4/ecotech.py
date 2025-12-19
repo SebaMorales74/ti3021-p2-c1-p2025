@@ -66,21 +66,26 @@ class Auth:
     @staticmethod
     def register(db: Database, id: int, username: str, password: str):
         print("registrando usuario")
-        password = password.encode("UTF-8")
-        salt = bcrypt.gensalt(12)
-        hash_password = bcrypt.hashpw(password,salt)
+        try:
+            password = password.encode("UTF-8")
+            salt = bcrypt.gensalt(12)
+            hash_password = bcrypt.hashpw(password,salt)
 
-        usuario = {
-            "id": id,
-            "username": username,
-            "password": hash_password
-        }
+            usuario = {
+                "id": id,
+                "username": username,
+                "password": hash_password
+            }
 
-        db.query(
-            sql= "INSERT INTO USERS(id,username,password) VALUES (:id, :username, :password)",
-            parameters=usuario
-        )
-        print("usuario registrado con exito")
+            db.query(
+                sql= "INSERT INTO USERS(id,username,password) VALUES (:id, :username, :password)",
+                parameters=usuario
+            )
+            print("usuario registrado con exito")
+            return True
+        except:
+            print("hubo un error")
+            return False
 
 class Finance:
     def __init__(self, base_url: str = "https://mindicador.cl/api"):
