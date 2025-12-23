@@ -8,13 +8,16 @@ import datetime
 
 load_dotenv()
 
+
 class Database:
     def __init__(self, username, dsn, password):
         self.username = username
         self.dsn = dsn
         self.password = password
+
     def get_connection(self):
         return oracledb.connect(user=self.username, password=self.password, dsn=self.dsn)
+
     def create_all_tables(self):
         tables = [
             (
@@ -41,7 +44,8 @@ class Database:
                         return resultado
                 conn.commit()
         except oracledb.DatabaseError as error:
-            print(error)
+            raise error
+
 
 class Auth:
     @staticmethod
@@ -49,27 +53,29 @@ class Auth:
         password = password.encode("UTF-8")
 
         resultado = db.query(
-            sql= "SELECT * FROM USERS WHERE username = :username",
-            parameters={"username":username}
+            sql="SELECT * FROM USERS WHERE username = :username",
+            parameters={"username": username}
         )
 
         if len(resultado) < 0:
-            return print("No hay coincidencias")
-        
+            return {"message": "No hay coincidencias", "success": False}
+
         hashed_password = bytes.fromhex(resultado[0][2])
 
         if bcrypt.checkpw(password, hashed_password):
-            return print("Logeado correctamente")
+            return {"message": "Inicio de sesión correcto", "success": True}
         else:
-            return print("Contraseña incorrecta")
+            return {"message": "Contraseña incorrecta", "success": False}
 
     @staticmethod
     def register(db: Database, id: int, username: str, password: str):
-        print("registrando usuario")
         try:
+            if not id or not username or not password:
+                return {"message": "Debes de registrar un usuario con ID, Username y Password", "success": False}
+            
             password = password.encode("UTF-8")
             salt = bcrypt.gensalt(12)
-            hash_password = bcrypt.hashpw(password,salt)
+            hash_password = bcrypt.hashpw(password, salt)
 
             usuario = {
                 "id": id,
@@ -78,18 +84,19 @@ class Auth:
             }
 
             db.query(
-                sql= "INSERT INTO USERS(id,username,password) VALUES (:id, :username, :password)",
+                sql="INSERT INTO USERS(id,username,password) VALUES (:id, :username, :password)",
                 parameters=usuario
             )
-            print("usuario registrado con exito")
-            return True
-        except:
-            print("hubo un error")
-            return False
+            return {"message": "Usuario registrado con exito", "success": True}
+        except Exception as error:
+            return {"message": f"{error}", "success": False}
+
+
 
 class Finance:
     def __init__(self, base_url: str = "https://mindicador.cl/api"):
         self.base_url = base_url
+
     def get_indicator(self, indicator: str, fecha: str = None) -> float:
         try:
             if not fecha:
@@ -100,20 +107,39 @@ class Finance:
             url = f"{self.base_url}/{indicator}/{fecha}"
             respuesta = requests.get(url).json()
             return respuesta["serie"][0]["valor"]
-        except Exception as e:
-            print(f"Hubo un error con la solicitud\n{e}")
+        except Exception as error:
+            return {"message": f"Hubo un error con la solicitud {error}", "success": False}
+
     def get_usd(self, fecha: str = None):
-        return self.get_indicator("dolar", fecha)
+        valor = self.get_indicator("dolar", fecha)
+        return valor
+
     def get_eur(self, fecha: str = None):
-        return self.get_indicator("euro", fecha)
+        valor = self.get_indicator("euro", fecha)
+        return valor
+
     def get_uf(self, fecha: str = None):
-        return self.get_indicator("uf", fecha)
+        valor = self.get_indicator("uf", fecha)
+        return valor
+
     def get_ivp(self, fecha: str = None):
-        return self.get_indicator("ivp", fecha)
+        valor = self.get_indicator("ivp", fecha)
+        return valor
+
     def get_ipc(self, fecha: str = None):
-        return self.get_indicator("ipc", fecha)
+        valor = self.get_indicator("ipc", fecha)
+        return valor
+
     def get_utm(self, fecha: str = None):
-        return self.get_indicator("utm", fecha)
+        valor = self.get_indicator("utm", fecha)
+        return valor
+
 
 if __name__ == "__main__":
-    print("ECOTECH")
+    db = Database(
+        username=os.getenv("ORACLE_USER"),
+        password=os.getenv("ORACLE_PASSWORD"),
+        dsn=os.getenv("ORACLE_DSN")
+    )
+
+    Auth.login(db, "soyelseba", "alskjflsakf")
